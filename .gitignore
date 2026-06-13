@@ -4,6 +4,7 @@ __pycache__/
 *.pyc
 .cas-browser-profile/
 .qlu-token.json
+.qlu-credentials.json
 .env
 original-upload/
 qlu-lib-original-upload.zip

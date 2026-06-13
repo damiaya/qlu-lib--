@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>齐鲁工业大学图书馆座位预约控制台</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="流程导航">
+        <div class="brand">
+          <div class="brand-mark">QLU</div>
+          <div>
+            <h1>座位预约</h1>
+            <p>CMD 前端控制台</p>
+          </div>
+        </div>
+
+        <nav class="steps">
+          <button class="step is-active" data-panel="login">
+            <span class="step-index">1</span>
+            <span>登录状态</span>
+          </button>
+          <button class="step" data-panel="filters">
+            <span class="step-index">2</span>
+            <span>查询筛选</span>
+          </button>
+          <button class="step" data-panel="seats">
+            <span class="step-index">3</span>
+            <span>座位选择</span>
+          </button>
+          <button class="step" data-panel="booking">
+            <span class="step-index">4</span>
+            <span>预约确认</span>
+          </button>
+          <button class="step" data-panel="logs">
+            <span class="step-index">5</span>
+            <span>运行日志</span>
+          </button>
+        </nav>
+
+        <div class="side-status">
+          <span class="dot is-online"></span>
+          <span>学校接口在线</span>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">齐鲁工业大学图书馆</p>
+            <h2>预约工作台</h2>
+          </div>
+          <div class="status-row">
+            <div class="status-pill" id="tokenPill">
+              <span class="dot"></span>
+              <span>未导入 token</span>
+            </div>
+            <div class="status-pill">
+              <span class="metric-label">校时</span>
+              <strong id="clockOffset">+2s</strong>
+            </div>
+            <div class="status-pill">
+              <span class="metric-label">空闲</span>
+              <strong id="freeCount">18</strong>
+            </div>
+          </div>
+        </header>
+
+        <section class="summary-band" id="login">
+          <div>
+            <p class="section-label">CAS 登录</p>
+            <h3 id="tokenTitle">等待 CAS 登录</h3>
+            <p id="tokenMeta">点击打开 CAS 登录，完成认证后会自动导入 token。</p>
+          </div>
+          <div class="command-row">
+            <button class="icon-button" id="loginButton" title="打开 CAS 登录">↗</button>
+            <button class="text-button" id="tokenButton">打开 CAS 登录</button>
+            <button class="ghost-button" id="clearTokenButton">清除</button>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <div class="main-column">
+            <section class="panel" id="filters">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-label">查询条件</p>
+                  <h3>日期、楼层与区域</h3>
+                </div>
+                <button class="icon-button" id="refreshButton" title="刷新座位">↻</button>
+              </div>
+
+              <div class="filter-grid">
+                <label>
+                  <span>预约日期</span>
+                  <select id="dateSelect">
+                    <option>2026-06-14</option>
+                    <option>2026-06-15</option>
+                    <option>2026-06-16</option>
+                  </select>
+                </label>
+                <label>
+                  <span>楼层</span>
+                  <select id="floorSelect">
+                    <option value="all">全部楼层</option>
+                    <option value="2F">二楼</option>
+                    <option value="3F">三楼</option>
+                    <option value="4F">四楼</option>
+                  </select>
+                </label>
+                <label>
+                  <span>区域</span>
+                  <select id="areaSelect">
+                    <option>三楼东区</option>
+                    <option>三楼西区</option>
+                    <option>四楼阅览区</option>
+                  </select>
+                </label>
+                <label>
+                  <span>座位类型</span>
+                  <select id="typeSelect">
+                    <option>普通座位</option>
+                    <option>靠窗座位</option>
+                    <option>电源座位</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="search-row">
+                <label class="search-field">
+                  <span>座位号</span>
+                  <input id="seatSearch" type="search" placeholder="输入 052、A12 等" />
+                </label>
+                <div class="legend" aria-label="座位状态">
+                  <span><i class="legend-box free"></i>空闲</span>
+                  <span><i class="legend-box selected"></i>已选</span>
+                  <span><i class="legend-box occupied"></i>占用</span>
+                  <span><i class="legend-box locked"></i>不可约</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel" id="seats">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-label">座位图</p>
+                  <h3 id="seatMapTitle">三楼东区 · 08:30-22:00</h3>
+                </div>
+                <div class="compact-stat">
+                  <span>segment</span>
+                  <strong id="segmentValue">1552988</strong>
+                </div>
+              </div>
+              <div class="seat-map" id="seatMap" aria-label="可选座位图"></div>
+            </section>
+
+            <section class="panel" id="logs">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-label">运行日志</p>
+                  <h3>关键事件</h3>
+                </div>
+                <button class="ghost-button" id="clearLogButton">清空</button>
+              </div>
+              <div class="log-list" id="logList"></div>
+            </section>
+          </div>
+
+          <aside class="booking-column" id="booking">
+            <section class="panel sticky-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-label">预约确认</p>
+                  <h3 id="selectedSeatTitle">尚未选择座位</h3>
+                </div>
+              </div>
+
+              <dl class="detail-list">
+                <div>
+                  <dt>区域</dt>
+                  <dd id="detailArea">三楼东区</dd>
+                </div>
+                <div>
+                  <dt>日期</dt>
+                  <dd id="detailDate">2026-06-14</dd>
+                </div>
+                <div>
+                  <dt>时间</dt>
+                  <dd id="detailTime">--</dd>
+                </div>
+              </dl>
+
+              <div class="mode-switch" role="tablist" aria-label="预约方式">
+                <button class="is-selected" data-mode="now">立即预约</button>
+                <button data-mode="schedule">定时预约</button>
+              </div>
+
+              <div class="schedule-box" id="scheduleBox" hidden>
+                <label>
+                  <span>执行时间</span>
+                  <input id="runAtInput" type="datetime-local" value="2026-06-14T05:00" />
+                </label>
+                <label>
+                  <span>重试次数</span>
+                  <input id="attemptInput" type="number" min="1" max="10" value="5" />
+                </label>
+                <label>
+                  <span>间隔秒数</span>
+                  <input id="intervalInput" type="number" min="2" max="60" value="3" />
+                </label>
+              </div>
+
+              <div class="payload-box">
+                <div class="payload-heading">
+                  <span>提交参数</span>
+                  <button class="icon-button small" id="copyButton" title="复制参数">□</button>
+                </div>
+                <pre id="payloadPreview">{
+  "seat_id": "",
+  "day": "2026-06-14",
+  "segment": "1552988"
+}</pre>
+              </div>
+
+              <button class="primary-button" id="submitButton" disabled>提交预约</button>
+            </section>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

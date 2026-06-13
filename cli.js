@@ -16,13 +16,18 @@ const session = {
   cookies: new Map()
 };
 
-const rl = readline.createInterface({ input, output });
+let rl;
 
 class UserExit extends Error {}
 
+function getReadline() {
+  if (!rl) rl = readline.createInterface({ input, output });
+  return rl;
+}
+
 async function ask(prompt) {
   try {
-    return await rl.question(prompt);
+    return await getReadline().question(prompt);
   } catch (error) {
     if (String(error?.message || "").includes("readline was closed")) {
       throw new UserExit();
@@ -662,10 +667,37 @@ async function mainMenu() {
   }
 }
 
-mainMenu()
-  .catch((error) => {
-    if (error instanceof UserExit) return;
-    console.error(`程序异常：${error.message}`);
-    process.exitCode = 1;
-  })
-  .finally(() => rl.close());
+if (require.main === module) {
+  mainMenu()
+    .catch((error) => {
+      if (error instanceof UserExit) return;
+      console.error(`程序异常：${error.message}`);
+      process.exitCode = 1;
+    })
+    .finally(() => {
+      if (rl) rl.close();
+    });
+}
+
+module.exports = {
+  session,
+  TOKEN_FILE,
+  tokenExpiry,
+  formatShanghaiDateTime,
+  loadSavedToken,
+  clearSavedToken,
+  validateCurrentToken,
+  acquireTokenWithBrowser,
+  importToken,
+  getSiteConfig,
+  getRemoteClock,
+  loadOptions,
+  loadAreas,
+  loadSpaceInfo,
+  loadSeats,
+  book,
+  flattenStoreys,
+  bookingTimeForDate,
+  buildPayload,
+  availableSeats
+};
